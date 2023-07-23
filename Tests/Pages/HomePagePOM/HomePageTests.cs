@@ -1,8 +1,9 @@
 ﻿using Microsoft.Playwright;
 using MytheresaSystemTests.Configuration;
 using MytheresaSystemTests.Core;
+using MytheresaSystemTests.Tests.HomePagePOM;
 
-namespace MytheresaSystemTests.Tests.HomePage.TestCases
+namespace MytheresaSystemTests.Tests.Pages.HomePagePOM
 {
     [Parallelizable(ParallelScope.Self)]
     [TestFixture]
@@ -15,7 +16,8 @@ namespace MytheresaSystemTests.Tests.HomePage.TestCases
         [Test]
         public async Task CheckForConsoleErrors()
         {
-            var page = await this.Page;
+            var page = await Page;
+            HomePage homePage = new HomePage(page);
             var url = $"{_testSettings.BaseUrl}/de/en/men";
             await page.GotoAsync(url, new PageGotoOptions { WaitUntil = WaitUntilState.NetworkIdle });
 
@@ -30,30 +32,25 @@ namespace MytheresaSystemTests.Tests.HomePage.TestCases
 
             await page.WaitForConsoleMessageAsync(new PageWaitForConsoleMessageOptions { Timeout = 10000 });
             int errorsCount = consoleErrors.Count;
-
-            Assert.That(errorsCount, Is.EqualTo(0), $"{errorsCount} unexpected console errors are displayed on the page.");
+            homePage.AssertNoConsoleErrorsAreDisplayed(errorsCount);
         }
 
         [Test]
         public async Task CheckForBrokenLinks()
         {
-            var page = await this.Page;
+            var page = await Page;
+            HomePage homePage = new HomePage(page);
             var url = $"{_testSettings.BaseUrl}/de/en/men";
             await page.GotoAsync(url);
 
-            var anchors = await page.Locator("//a[@href]").AllAsync();
+            var anchors = await homePage.GetAllAnchors();
             HashSet<string> brokenLinks = new HashSet<string>();
 
             foreach (var anchor in anchors.ToList())
             {
                 var href = await anchor.GetAttributeAsync("href");
 
-                if (string.IsNullOrEmpty(href)
-                    || href.Equals("#")
-                    || href.StartsWith("mailto")
-                    || href.StartsWith("javascript:")
-                    || href.StartsWith("tel:")
-                    || href.StartsWith("fax:"))
+                if (homePage.IsValidHref(href))
                 {
                     continue;
                 }
@@ -62,9 +59,8 @@ namespace MytheresaSystemTests.Tests.HomePage.TestCases
                      ? href
                      : $"{_testSettings.BaseUrl}{href}";
 
-                var isSuccessful = await GetIsSuccessStatusCode(currentUrl);
-
-                if (!isSuccessful)
+                var response = await GetPageResponse(currentUrl);
+                if (!response.IsSuccessStatusCode)
                 {
                     brokenLinks.Add(currentUrl);
                 }
@@ -73,12 +69,12 @@ namespace MytheresaSystemTests.Tests.HomePage.TestCases
             Assert.That(brokenLinks.Count, Is.EqualTo(0), "Links that does not return success code are found on the page.");
         }
 
-        private async Task<bool> GetIsSuccessStatusCode(string url)
+        private async Task<HttpResponseMessage> GetPageResponse(string pageUrl)
         {
-            using var client = new HttpClient();
-            var result = await client.GetAsync(url);
+            using var httpClient = new HttpClient();
+            var response = await httpClient.GetAsync(pageUrl);
 
-            return result.IsSuccessStatusCode;
+            return response;
         }
     }
 }

@@ -13,9 +13,9 @@ namespace MytheresaSystemTests.Core
         public Driver(TestSettings testSettings)
         {
             _settings = testSettings;
-            _page = Task.Run(CreatePageAsync);
             _browser = Task.Run(GetDriver);
             _context = Task.Run(CreateBrowserContext);
+            _page = Task.Run(CreatePageAsync);
         }
 
         public Task<IPage> Page => _page;
