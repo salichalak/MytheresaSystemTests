@@ -14,8 +14,6 @@ namespace MytheresaSystemTests.Tests.Pages.LoginPagePOM
 
         public async Task Login()
         {
-            // string email = ConfigurationManager.AppSettings["Email"]; ;
-            // string password = ConfigurationManager.AppSettings["Password"];
             await EmailAddressInput.FillAsync(UsersTestData.DummyUserEmail);
             await PasswordInput.FillAsync(UsersTestData.DummyUserPass);
             await LoginButton.ClickAsync();
