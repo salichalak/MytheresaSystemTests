@@ -4,6 +4,8 @@
     {
         public string BrowserType { get; set; }
 
+        public string BrowserChannel { get; set; }
+
         public string BaseUrl { get; set; } = "https://www.mytheresa.com";
 
         public bool IsHeadless { get; set; }

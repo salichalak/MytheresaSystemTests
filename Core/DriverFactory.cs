@@ -3,7 +3,7 @@ using MytheresaSystemTests.Configuration;
 
 namespace MytheresaSystemTests.Core
 {
-    public class DriverFactory
+    public static class DriverFactory
     {
         public static async Task<IBrowser> CreateDriver(TestSettings settings)
         {
@@ -13,6 +13,7 @@ namespace MytheresaSystemTests.Core
                 Timeout = settings.TimeOut,
                 Headless = settings.IsHeadless,
                 SlowMo = settings.SlowMotion,
+                Channel = settings.BrowserChannel,
             };
 
             var playwright = await Playwright.CreateAsync();

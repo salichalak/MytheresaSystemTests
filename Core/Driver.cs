@@ -6,23 +6,23 @@ namespace MytheresaSystemTests.Core
     public class Driver : IDisposable
     {
         private readonly TestSettings _settings;
-        private readonly Lazy<Task<IPage>> _page;
-        private readonly Lazy<Task<IBrowser>> _browser;
-        private readonly Lazy<Task<IBrowserContext>> _context;
+        private readonly Task<IPage> _page;
+        private readonly Task<IBrowser> _browser;
+        private readonly Task<IBrowserContext> _context;
 
         public Driver(TestSettings testSettings)
         {
             _settings = testSettings;
-            _page = new Lazy<Task<IPage>>(CreatePageAsync);
-            _browser = new Lazy<Task<IBrowser>>(GetDriver);
-            _context = new Lazy<Task<IBrowserContext>>(CreateBrowserContext);
+            _page = Task.Run(CreatePageAsync);
+            _browser = Task.Run(GetDriver);
+            _context = Task.Run(CreateBrowserContext);
         }
 
-        public Task<IPage> Page => _page.Value;
+        public Task<IPage> Page => _page;
 
-        public Task<IBrowser> Browser => _browser.Value;
+        public Task<IBrowser> Browser => _browser;
 
-        public Task<IBrowserContext> Context => _context.Value;
+        public Task<IBrowserContext> Context => _context;
 
         private async Task<IBrowser> GetDriver()
         {
@@ -31,12 +31,12 @@ namespace MytheresaSystemTests.Core
 
         private async Task<IPage> CreatePageAsync()
         {
-            return await (await _browser.Value).NewPageAsync();
+            return await (await _browser).NewPageAsync();
         }
 
         private async Task<IBrowserContext> CreateBrowserContext()
         {
-            return await (await _browser.Value).NewContextAsync();
+            return await (await _browser).NewContextAsync();
         }
 
         public void Dispose()

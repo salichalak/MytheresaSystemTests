@@ -3,9 +3,9 @@ using System.Text.Json;
 
 namespace MytheresaSystemTests.Configuration
 {
-    public class TestSettingsReader
+    public static class TestSettingsReader
     {
-        public TestSettings ReadSettings()
+        public static TestSettings ReadSettings()
         {
             var settings = File.ReadAllText(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "/runsettings.json");
             var options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };

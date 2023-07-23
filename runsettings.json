@@ -1,7 +1,8 @@
 {
   "BrowserType": "chromium",
+  "BrowserChannel": "chrome",
   "BaseUrl": "https://www.mytheresa.com",
   "IsHeadless": false,
-  "SlowMotion": 0.5,
-  "TimeOut": 5000
+  "SlowMotion": 0,
+  "TimeOut": 7000
 }
